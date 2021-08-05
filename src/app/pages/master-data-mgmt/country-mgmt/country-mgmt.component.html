@@ -1,0 +1,270 @@
+<div class="container-fluid">
+    <app-pagetitle title="Master Data Management" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                  <div class="row mb-md-2">
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-title">Country Data List</h4>
+                              </div>
+                            <!-- End search -->
+                            <div class="col-md-6">
+                                <div class="text-right">
+                                    <button type="button" (click)="openAddCountryModel(centerDataModal)"
+                                         class="btn btn-success btn btn-sm">
+                                        Add New Country
+                                        <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                                    </button>
+                                </div>
+                                
+                            </div>
+                          </div>
+                      </div>
+                     
+                  </div>
+                  <!-- Table -->
+                  <div class="table-responsive">
+                    <table id="basic-datatable"
+                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                      <thead>
+                        <tr>
+                          <th class="table-column-text-center">#</th>
+                          <th class="table-column-text-left" sortable="name" (sort)="onSort($event)">Country Code</th>
+                          <th class="table-column-text-left" sortable="position" (sort)="onSort($event)">Country Name</th>
+                          <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Currency</th>
+                          <th class="table-column-text-center" style="width: 25%;">Action Taken</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let table of tables$ | async;let i=index">
+                        <tr>
+                          <td align="center">
+                            {{i+1}}
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.countryCode" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.countryName" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.currency" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <a (click)="editCountryPopupForm(table,editCntrycenterDataModal)" href="javascript:void(0);" class="mr-3 text-primary" ngbTooltip="Edit"><i
+                                class="mdi mdi-pencil font-size-18"></i>Edit</a>
+                            <a href="javascript:void(0);" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                                class="mdi mdi-trash-can font-size-18"></i>Delete</a>
+                            <a (click)="addStatePopupForm(table, addStatecenterDataModal)" href="javascript:void(0);" class="text-success" ngbTooltip="add"><i
+                                class="mdi mdi-plus-circle-outline font-size-18"></i>Add State</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- End table -->
+                  <div class="row justify-content-md-between align-items-md-center mt-2">
+                    <div class="col-sm-12 col-md-5">
+                      <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                        {{service.startIndex}} to
+                        {{service.endIndex}} of {{service.totalRecords}}
+                        entries
+                      </div>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="col-sm-12 col-md-5">
+                      <div class="text-md-right float-md-right pagination-rounded">
+                        <ngb-pagination [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
+                        </ngb-pagination>
+                      </div>
+                    </div>
+                    <!-- End Pagination -->
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>  
+
+<!-- ========================================= Add New Country ========================================= -->
+
+<ng-template #centerDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Add New Country</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="addCountry()" [formGroup]="addCountryForm">
+                  <div class="form-group">
+                    <label>Country Code</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="countryCode"
+                        [ngClass]="{'is-invalid': rangesubmit && countryFormControls.countryCode.errors}" placeholder="Enter Country Code" />
+                      <div *ngIf="rangesubmit && countryFormControls.countryCode.errors" class="invalid-feedback">
+                        <span *ngIf="countryFormControls.countryCode.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Country Name</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="countryName"
+                        [ngClass]="{'is-invalid': rangesubmit && countryFormControls.countryName.errors}" placeholder="Enter Country Name" />
+                      <div *ngIf="rangesubmit && countryFormControls.countryName.errors" class="invalid-feedback">
+                        <span *ngIf="countryFormControls.countryName.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Currency</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="currency"
+                        [ngClass]="{'is-invalid': rangesubmit && countryFormControls.currency.errors}" placeholder="Enter Currency" />
+                      <div *ngIf="rangesubmit && countryFormControls.currency.errors" class="invalid-feedback">
+                        <span *ngIf="countryFormControls.currency.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="form-group mb-0">
+                    <div>
+                      <button type="submit" class="btn btn-primary mr-1">
+                        Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>
+
+
+<!-- ========================================= Edit Country ========================================= -->
+
+<ng-template #editCntrycenterDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Update Country</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="submitUpdateCountryForm()" [formGroup]="updateCountryForm">
+                  <div class="form-group">
+                    <label>Country Code</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="countryCode"
+                        [ngClass]="{'is-invalid': rangesubmit && updateCountryFormControls.countryCode.errors}" placeholder="Enter Country Code"  required />
+                      <div *ngIf="rangesubmit && updateCountryFormControls.countryCode.errors" class="invalid-feedback">
+                        <span *ngIf="updateCountryFormControls.countryCode.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Country Name</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="countryName"
+                        [ngClass]="{'is-invalid': rangesubmit && updateCountryFormControls.countryName.errors}" placeholder="Enter Country Name" required />
+                      <div *ngIf="rangesubmit && updateCountryFormControls.countryName.errors" class="invalid-feedback">
+                        <span *ngIf="updateCountryFormControls.countryName.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Currency</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="currency"
+                        [ngClass]="{'is-invalid': rangesubmit && updateCountryFormControls.currency.errors}" placeholder="Enter Currency" required/>
+                      <div *ngIf="rangesubmit && updateCountryFormControls.currency.errors" class="invalid-feedback">
+                        <span *ngIf="updateCountryFormControls.currency.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="form-group mb-0">
+                    <div>
+                      <button type="submit" class="btn btn-primary mr-1">
+                        Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>
+
+<!-- ========================================= Add State in Country ========================================= -->
+
+<ng-template #addStatecenterDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Add New State</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="submitAddStateForm()" [formGroup]="addStateForm">
+                  <div class="form-group">
+                    <label>State Code</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="stateCode"
+                        [ngClass]="{'is-invalid': rangesubmit && addStateFormControls.stateCode.errors}" placeholder="Enter Country Code"  required />
+                      <div *ngIf="rangesubmit && addStateFormControls.stateCode.errors" class="invalid-feedback">
+                        <span *ngIf="addStateFormControls.stateCode.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>State Name</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="stateName"
+                        [ngClass]="{'is-invalid': rangesubmit && addStateFormControls.stateName.errors}" placeholder="Enter Country Name" required />
+                      <div *ngIf="rangesubmit && addStateFormControls.stateName.errors" class="invalid-feedback">
+                        <span *ngIf="addStateFormControls.stateName.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Country Name</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="countryName"
+                        [ngClass]="{'is-invalid': rangesubmit && addStateFormControls.countryName.errors}" placeholder="Enter Currency" required/>
+                      <div *ngIf="rangesubmit && addStateFormControls.countryName.errors" class="invalid-feedback">
+                        <span *ngIf="addStateFormControls.countryName.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="form-group mb-0">
+                    <div>
+                      <button type="submit" class="btn btn-primary mr-1">
+                        Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>

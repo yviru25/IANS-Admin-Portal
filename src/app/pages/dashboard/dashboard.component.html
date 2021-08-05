@@ -1,0 +1,60 @@
+<div class="container-fluid">
+  <app-pagetitle title="Dashboard" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+  <!-- <div class="row mt-3">
+    <div class="col-12 col-lg-6 col-xl-3" *ngFor="let item of quickService">
+      <div [class]="item.cardColor">
+        <div class="card-body">
+          <div class="media align-items-center">
+            <div class="w-icon"> <i [class]="item.iconClassName"></i>
+            </div>
+            <div class="media-body ml-3 border-left-xs border-white-2">
+              <h4 class="mb-0 ml-3 text-white small-font">{{item.serviceName}}</h4>
+              <p class="mb-0 ml-3 text-white extra-small-font">{{item.serviceType}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- <div class="row">
+    <div class="col-xl-3 col-sm-6" *ngFor="let item of quickService">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center">
+            <i [class]="item.iconClassName">
+            <div class="media-body">
+              <h5 class="text-truncate">
+                <a href="javascript: void(0);" class="text-dark">{{item.serviceName}}</a>
+              </h5>
+              <p class="text-muted">
+                <i class="mdi mdi-account mr-1"></i>
+                {{data.serviceType}}
+              </p>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="row">
+    <div class="col-xl-3 col-sm-6" *ngFor="let item of quickService">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center">
+            <i [class]="item.iconClassName" id="dIconStyle"></i>
+              <div class="media-body">
+                <h5 class="text-truncate">
+                  <a href="javascript: void(0);" class="text-dark">{{item.serviceName}}</a>
+                </h5>
+                <p class="text-muted">
+                  <!-- <i class="mdi mdi-account mr-1"></i> -->
+                  {{item.serviceType}}
+                </p>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  
+</div>
