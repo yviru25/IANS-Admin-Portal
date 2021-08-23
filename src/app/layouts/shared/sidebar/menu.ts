@@ -33,13 +33,13 @@ export const MENU: MenuItem[] = [
             {
                 id: 18,
                 label: 'Service Management',
-                link: '/email/read',
+                link: '/master-data/service/management',
                 parentId: 14
             },
             {
                 id: 19,
                 label: 'Customer Management',
-                link: '/email/read',
+                link: '/master-data/customer/management',
                 parentId: 14
             }
         ]

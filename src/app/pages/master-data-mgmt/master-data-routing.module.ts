@@ -3,6 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { CountryMgmtComponent } from './country-mgmt/country-mgmt.component';
 import { StateMgmtComponent } from './state-mgmt/state-mgmt.component';
 import { CityMgmtComponent } from './city-mgmt/city-mgmt.component';
+import { CustomerMgmtComponent } from './customer-mgmt/customer-mgmt.component';
+import { ServiceMgmtComponent } from './service-mgmt/service-mgmt.component';
 
 const routes: Routes = [
     {
@@ -16,6 +18,14 @@ const routes: Routes = [
     {
         path: 'city/management',
         component: CityMgmtComponent
+    },
+    {
+        path: 'service/management',
+        component: ServiceMgmtComponent
+    },
+    {
+        path: 'customer/management',
+        component: CustomerMgmtComponent
     }
 ];
 

@@ -1,1 +1,239 @@
-<p>service-mgmt works!</p>
+<div class="container-fluid">
+    <app-pagetitle title="Master Data Management" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                  <div class="row mb-md-2">
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-title">Service Data List</h4>
+                              </div>
+                            <!-- End search -->
+                            <div class="col-md-6">
+                                <div class="text-right">
+                                    <button type="button" (click)="openAddServiceModel(centerDataModal)"
+                                         class="btn btn-success btn btn-sm">
+                                        Add New Service
+                                        <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                                    </button>
+                                </div>
+                                
+                            </div>
+                          </div>
+                      </div>
+                     
+                  </div>
+                  <!-- Table -->
+                  <div class="table-responsive">
+                    <table id="basic-datatable"
+                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                      <thead>
+                        <tr>
+                          <th class="table-column-text-center">#</th>
+                          <th class="table-column-text-left" sortable="name" (sort)="onSort($event)">Service Code</th>
+                          <th class="table-column-text-left" sortable="position" (sort)="onSort($event)">Service Name</th>
+                          <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Description</th>
+                          <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Default Price</th>
+                          <th class="table-column-text-center" style="width: 30%;">Action Taken</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let table of tableData let i=index">
+                        <tr>
+                          <td align="center">
+                            {{i+1}}
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.serviceCode" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.serviceName" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.serviceDescription" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.defaultPrice" [term]="service.searchTerm"></ngb-highlight>
+                          </td>
+                          <td>
+                            <a (click)="editServicePopupForm(table,editServicecenterDataModal)" href="javascript:void(0);" class="mr-3 text-primary" ngbTooltip="Edit">
+                                <i class="mdi mdi-pencil font-size-18"></i>Edit</a>
+                            <a href="javascript:void(0);" (click)="deleteService(table)" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                                class="mdi mdi-trash-can font-size-18"></i>Delete</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- ========================================= Add New Service ========================================= -->
+
+<ng-template #centerDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Add New Service</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="addService()" [formGroup]="addServiceForm">
+                  <div class="form-group">
+                    <label>Service Code</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="serviceCode"
+                        [ngClass]="{'is-invalid': rangesubmit && serviceFormControls.serviceCode.errors}" placeholder="Enter Service Code" />
+                      <div *ngIf="rangesubmit && serviceFormControls.serviceCode.errors" class="invalid-feedback">
+                        <span *ngIf="serviceFormControls.serviceCode.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Service Name</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="serviceName"
+                        [ngClass]="{'is-invalid': rangesubmit && serviceFormControls.serviceName.errors}" placeholder="Enter Service Name" />
+                      <div *ngIf="rangesubmit && serviceFormControls.serviceName.errors" class="invalid-feedback">
+                        <span *ngIf="serviceFormControls.serviceName.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Description</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="serviceDescription"
+                        [ngClass]="{'is-invalid': rangesubmit && serviceFormControls.serviceDescription.errors}" placeholder="Enter Description" />
+                      <div *ngIf="rangesubmit && serviceFormControls.serviceDescription.errors" class="invalid-feedback">
+                        <span *ngIf="serviceFormControls.serviceDescription.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Default Price</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="defaultPrice"
+                        [ngClass]="{'is-invalid': rangesubmit && serviceFormControls.defaultPrice.errors}" placeholder="Enter defaultPrice" />
+                      <div *ngIf="rangesubmit && serviceFormControls.defaultPrice.errors" class="invalid-feedback">
+                        <span *ngIf="serviceFormControls.defaultPrice.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Sac Code</label>
+                    <div>
+                      <input type="text" class="form-control" formControlName="sacCode"
+                        [ngClass]="{'is-invalid': rangesubmit && serviceFormControls.sacCode.errors}" placeholder="Enter sacCode" />
+                      <div *ngIf="rangesubmit && serviceFormControls.sacCode.errors" class="invalid-feedback">
+                        <span *ngIf="serviceFormControls.sacCode.errors.required">This value is required.</span>
+                      </div>
+                    </div>
+                  </div>
+      
+                  <div class="form-group mb-0">
+                    <div>
+                      <button type="submit" class="btn btn-primary mr-1">
+                        Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>
+
+
+<!-- ========================================= Edit Service ========================================= -->
+
+<ng-template #editServicecenterDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Update Service</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="submitUpdateServiceForm()" [formGroup]="updateServiceForm">
+                  
+                    <div class="form-group">
+                        <label>Service Code</label>
+                        <div>
+                          <input type="text" class="form-control" formControlName="serviceCode"
+                            [ngClass]="{'is-invalid': rangesubmit && updateServiceControls.serviceCode.errors}" placeholder="Enter Service Code" />
+                          <div *ngIf="rangesubmit && updateServiceControls.serviceCode.errors" class="invalid-feedback">
+                            <span *ngIf="updateServiceControls.serviceCode.errors.required">This value is required.</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Service Name</label>
+                        <div>
+                          <input type="text" class="form-control" formControlName="serviceName"
+                            [ngClass]="{'is-invalid': rangesubmit && updateServiceControls.serviceName.errors}" placeholder="Enter Service Name" />
+                          <div *ngIf="rangesubmit && updateServiceControls.serviceName.errors" class="invalid-feedback">
+                            <span *ngIf="updateServiceControls.serviceName.errors.required">This value is required.</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Description</label>
+                        <div>
+                          <input type="text" class="form-control" formControlName="serviceDescription"
+                            [ngClass]="{'is-invalid': rangesubmit && updateServiceControls.serviceDescription.errors}" placeholder="Enter Description" />
+                          <div *ngIf="rangesubmit && updateServiceControls.serviceDescription.errors" class="invalid-feedback">
+                            <span *ngIf="updateServiceControls.serviceDescription.errors.required">This value is required.</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Default Price</label>
+                        <div>
+                          <input type="text" class="form-control" formControlName="defaultPrice"
+                            [ngClass]="{'is-invalid': rangesubmit && updateServiceControls.defaultPrice.errors}" placeholder="Enter defaultPrice" />
+                          <div *ngIf="rangesubmit && updateServiceControls.defaultPrice.errors" class="invalid-feedback">
+                            <span *ngIf="updateServiceControls.defaultPrice.errors.required">This value is required.</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Sac Code</label>
+                        <div>
+                          <input type="text" class="form-control" formControlName="sacCode"
+                            [ngClass]="{'is-invalid': rangesubmit && updateServiceControls.sacCode.errors}" placeholder="Enter sacCode" />
+                          <div *ngIf="rangesubmit && updateServiceControls.sacCode.errors" class="invalid-feedback">
+                            <span *ngIf="updateServiceControls.sacCode.errors.required">This value is required.</span>
+                          </div>
+                        </div>
+                      </div>
+          
+                      <div class="form-group mb-0">
+                        <div>
+                          <button type="submit" class="btn btn-primary mr-1">
+                            Submit
+                          </button>
+                          <button type="reset" class="btn btn-secondary">
+                            Reset
+                          </button>
+                        </div>
+                      </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>
+
+
+  <ngx-bootstrap-spinner></ngx-bootstrap-spinner>
