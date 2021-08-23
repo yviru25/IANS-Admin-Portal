@@ -1,4 +1,5 @@
 export const environment = {
+  SERVER_ORIGIN: 'http://localhost:8888/api/',
   production: true,
   defaultauth: 'fackbackend',
   firebaseConfig: {

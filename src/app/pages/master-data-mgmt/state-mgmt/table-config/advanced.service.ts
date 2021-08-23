@@ -49,7 +49,6 @@ function sort(tables: StateModel[], column: string, direction: string): StateMod
 function matches(tables: StateModel, term: string, pipe: PipeTransform) {
     return tables.stateCode.toLowerCase().includes(term)
         || tables.stateName.toLowerCase().includes(term)
-        || tables.countryName.toLowerCase().includes(term);
 }
 
 @Injectable({

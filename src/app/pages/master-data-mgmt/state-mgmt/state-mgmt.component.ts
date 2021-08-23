@@ -7,6 +7,10 @@ import { AdvancedService } from './table-config/advanced.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StateData } from './table-config/data';
 import { DecimalPipe } from '@angular/common';
+import { NgxSpinnerService } from "ngx-bootstrap-spinner";
+import { ApiService } from 'src/app/shared/services/api.services';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-state-mgmt',
@@ -31,33 +35,33 @@ export class StateMgmtComponent implements OnInit {
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
   constructor(public service: AdvancedService, private modalService: NgbModal,
-              public formBuilder: FormBuilder) {
-    this.statetables$ = service.tables$;
-    this.total$ = service.total$;
+              public formBuilder: FormBuilder, private spiner: NgxSpinnerService,
+              private apiService: ApiService) {
+    /* this.statetables$ = service.tables$;
+    this.total$ = service.total$; */
    }
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Dashboard' }, { label: 'State Management', active: true }];
-    this.tableData = [
-      {
-        stateCode: 'UP',
-        stateName: 'Uttar Pradesh',
-        countryName: 'India'
-      },
-    ];
+    this.getStateList();
 
 
-    this.addCityForm = this.formBuilder.group({
-      cityCode: ['', [Validators.required]],
-      cityName: ['', [Validators.required]],
-      stateName: ['', [Validators.required]],
-    });
+    
 
     this.submit = false;
     this.formsubmit = false;
     this.typesubmit = false;
     this.rangesubmit = false;
 
+  }
+
+  getStateList() {
+    this.spiner.show();
+    this.apiService.sendGetRequest('getStates').subscribe( (res) => {
+      this.spiner.hide();
+      this.tableData = res; 
+         
+    });
   }
 
 
@@ -88,22 +92,89 @@ export class StateMgmtComponent implements OnInit {
   editStatePopupForm(tabelDataModel: StateModel, editCntrycenterDataModal: any) {
       this.modalService.open(editCntrycenterDataModal, { centered: true });
       this.updateStateForm = this.formBuilder.group({
+        iansCountry: {
+          countryId: tabelDataModel.iansCountry.countryId
+        },
+        stateId: tabelDataModel.stateId,
         stateCode: [tabelDataModel.stateCode, [Validators.required]],
         stateName: [tabelDataModel.stateName, [Validators.required]],
-        countryName: [tabelDataModel.countryName, [Validators.required]],
+        countryName: [{value: tabelDataModel.iansCountry.countryName, disabled: true}, [Validators.required]],
       });
   }
 
-  addStatePopupForm(tabelDataModel: StateModel, addStatecenterDataModal: any) {
+  addCityPopupForm(tabelDataModel: StateModel, addStatecenterDataModal: any) {
     this.modalService.open(addStatecenterDataModal, { centered: true });
+    this.addCityForm = this.formBuilder.group({
+      cityCode: ['', [Validators.required]],
+      cityName: ['', [Validators.required]],
+      stateName: [{value: tabelDataModel.stateName, disabled: true}, [Validators.required]],
+      iansState: {
+        stateId: tabelDataModel.stateId
+      }
+    });
 }
 
-  submitUpdateCountryForm() {
-    console.log(this.updateStateForm.value);
+  submitUpdateStateForm() {
+    this.spiner.show();
+    this.apiService.sendPostFormRequest('iansStates', this.updateStateForm.value).subscribe((res) => {
+         this.spiner.hide();
+         Swal.fire(
+           'Updated!',
+           'State has been Updated.',
+           'success'
+         ).then( okay => {
+           if (okay) {
+             window.location.reload();
+           }
+       });
+
+    })
   }
 
-  submitAddStateForm() {
+  submitAddCityForm() {
+    this.spiner.show();
+    this.apiService.sendPostFormRequest('iansCities', this.addCityForm.value).subscribe((res) => {
+         this.spiner.hide();
+         Swal.fire(
+           'Added!',
+           'City has been added.',
+           'success'
+         ).then( okay => {
+           if (okay) {
+             window.location.reload();
+           }
+       });
 
+    })
+  }
+
+
+  deleteState(tabelDataModel: StateModel) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Want to delete State Data',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete.',
+      cancelButtonText: 'No, let me think'
+    }).then((result) => {
+      if (result.value) {
+        this.spiner.show();
+        this.apiService.sendDeleteRequest('iansStates/' + tabelDataModel.stateId)
+            .subscribe( res => {
+                this.spiner.hide();
+                Swal.fire(
+                  'Deleted!',
+                  'State has been removed successfully.',
+                  'success'
+                ).then( okay => {
+                  if (okay) {
+                    window.location.reload();
+                  }
+              });
+        });
+      }
+    });
   }
 
 }

@@ -7,6 +7,9 @@ import { CountryModel } from './table-config/country.model';
 import { tableData } from './table-config/data';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, Validators, FormGroup, FormGroupName } from '@angular/forms';
+import { NgxSpinnerService } from "ngx-bootstrap-spinner";
+import { ApiService } from 'src/app/shared/services/api.services';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-country-mgmt',
@@ -15,6 +18,7 @@ import { FormBuilder, Validators, FormGroup, FormGroupName } from '@angular/form
   providers: [AdvancedService, DecimalPipe]
 })
 export class CountryMgmtComponent implements OnInit {
+  serviceName = 'iansCountries';
   breadCrumbItems: Array<{}>;
   tableData: CountryModel[];
   tables$: Observable<CountryModel[]>;
@@ -31,14 +35,15 @@ export class CountryMgmtComponent implements OnInit {
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
   constructor(public service: AdvancedService, private modalService: NgbModal,
-              public formBuilder: FormBuilder) {
-    this.tables$ = service.tables$;
-    this.total$ = service.total$;
+              public formBuilder: FormBuilder, private spiner: NgxSpinnerService,
+              private apiService: ApiService) {
+    // this.tables$ = service.tables$;
+    // this.total$ = service.total$;
    }
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Dashboard' }, { label: 'Quick Service', active: true }];
-    this.tableData = tableData;
+    this.getCountryList();
 
 
     this.addCountryForm = this.formBuilder.group({
@@ -47,18 +52,20 @@ export class CountryMgmtComponent implements OnInit {
       currency: ['', [Validators.required]],
     });
 
-
-    this.addStateForm = this.formBuilder.group({
-      stateCode: ['', [Validators.required]],
-      stateName: ['', [Validators.required]],
-      countryName: ['', [Validators.required]],
-    });
-
     this.submit = false;
     this.formsubmit = false;
     this.typesubmit = false;
     this.rangesubmit = false;
 
+  }
+
+  getCountryList() {
+    this.spiner.show();
+    this.apiService.sendGetRequest(this.serviceName).subscribe( (res) => {
+      this.spiner.hide();
+      this.tableData = res._embedded.iansCountries;    
+         
+    });
   }
 
 
@@ -78,8 +85,20 @@ export class CountryMgmtComponent implements OnInit {
   }
 
   addCountry(): void {
-    this.rangesubmit = true;
-    console.log(this.addCountryForm.value);
+     this.spiner.show();
+     this.apiService.sendPostFormRequest(this.serviceName, this.addCountryForm.value).subscribe((res) => {
+          this.spiner.hide();
+          Swal.fire(
+            'Added!',
+            'Country has been added.',
+            'success'
+          ).then( okay => {
+            if (okay) {
+              window.location.reload();
+            }
+        });
+
+     })
   }
   get countryFormControls() {
     return this.addCountryForm.controls;
@@ -96,6 +115,7 @@ export class CountryMgmtComponent implements OnInit {
   editCountryPopupForm(tabelDataModel: CountryModel, editCntrycenterDataModal: any) {
       this.modalService.open(editCntrycenterDataModal, { centered: true });
       this.updateCountryForm = this.formBuilder.group({
+        countryId: [tabelDataModel.countryId],
         countryCode: [tabelDataModel.countryCode, [Validators.required]],
         countryName: [tabelDataModel.countryName, [Validators.required]],
         currency: [tabelDataModel.currency, [Validators.required]],
@@ -104,14 +124,76 @@ export class CountryMgmtComponent implements OnInit {
 
   addStatePopupForm(tabelDataModel: CountryModel, addStatecenterDataModal: any) {
     this.modalService.open(addStatecenterDataModal, { centered: true });
+    this.addStateForm = this.formBuilder.group({
+      iansCountry: {
+        countryId: tabelDataModel.countryId
+      },
+      stateCode: ['', [Validators.required]],
+      stateName: ['', [Validators.required]],
+      countryName: [{value: tabelDataModel.countryName, disabled: true}, [Validators.required]],
+    });
 }
 
   submitUpdateCountryForm() {
-    console.log(this.updateCountryForm.value);
+    this.spiner.show();
+     this.apiService.sendPostFormRequest(this.serviceName, this.updateCountryForm.value).subscribe((res) => {
+          this.spiner.hide();
+          Swal.fire(
+            'Updated!',
+            'Country has been Updated.',
+            'success'
+          ).then( okay => {
+            if (okay) {
+              window.location.reload();
+            }
+        });
+
+     })
+  }
+
+  deleteCountry(tabelDataModel: CountryModel) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Want to delete Country Data',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete.',
+      cancelButtonText: 'No, let me think'
+    }).then((result) => {
+      if (result.value) {
+        this.spiner.show();
+        this.apiService.sendDeleteRequest(this.serviceName+ '/' + tabelDataModel.countryId)
+            .subscribe( res => {
+                this.spiner.hide();
+                Swal.fire(
+                  'Deleted!',
+                  'Country has been removed successfully.',
+                  'success'
+                ).then( okay => {
+                  if (okay) {
+                    window.location.reload();
+                  }
+              });
+        });
+      }
+    });
   }
 
   submitAddStateForm() {
+    this.spiner.show();
+    this.apiService.sendPostFormRequest('iansStates', this.addStateForm.value).subscribe((res) => {
+         this.spiner.hide();
+         Swal.fire(
+           'Added!',
+           'State has been added.',
+           'success'
+         ).then( okay => {
+           if (okay) {
+             window.location.reload();
+           }
+       });
 
+    })
   }
 
 }

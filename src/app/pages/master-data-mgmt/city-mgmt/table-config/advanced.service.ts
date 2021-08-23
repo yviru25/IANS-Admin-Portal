@@ -49,7 +49,6 @@ function sort(tables: CityModel[], column: string, direction: string): CityModel
 function matches(tables: CityModel, term: string, pipe: PipeTransform) {
     return tables.cityCode.toLowerCase().includes(term)
         || tables.cityName.toLowerCase().includes(term)
-        || tables.stateName.toLowerCase().includes(term);
 }
 
 @Injectable({

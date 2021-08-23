@@ -38,7 +38,7 @@
                           <th class="table-column-text-center" style="width: 25%;">Action Taken</th>
                         </tr>
                       </thead>
-                      <tbody *ngFor="let table of statetables$ | async let i=index">
+                      <tbody *ngFor="let table of tableData let i=index">
                         <tr>
                           <td align="center">
                             {{i+1}}
@@ -50,12 +50,12 @@
                             <ngb-highlight [result]="table.cityName" [term]="service.searchTerm"></ngb-highlight>
                           </td>
                           <td>
-                            <ngb-highlight [result]="table.stateName" [term]="service.searchTerm"></ngb-highlight>
+                            <ngb-highlight [result]="table.iansState.stateName" [term]="service.searchTerm"></ngb-highlight>
                           </td>
                           <td>
-                            <a (click)="editStatePopupForm(table,editCitycenterDataModal)" href="javascript:void(0);" class="mr-3 text-primary" ngbTooltip="Edit"><i
+                            <a (click)="editCityPopupForm(table,editCitycenterDataModal)" href="javascript:void(0);" class="mr-3 text-primary" ngbTooltip="Edit"><i
                                 class="mdi mdi-pencil font-size-18"></i>Edit</a>
-                            <a href="javascript:void(0);" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                            <a href="javascript:void(0);" (click)="deleteCity(table)" class="mr-3 text-danger" ngbTooltip="Delete"><i
                                 class="mdi mdi-trash-can font-size-18"></i>Delete</a>
                           </td>
                         </tr>
@@ -63,7 +63,7 @@
                     </table>
                   </div>
                   <!-- End table -->
-                  <div class="row justify-content-md-between align-items-md-center mt-2">
+                  <!-- <div class="row justify-content-md-between align-items-md-center mt-2">
                     <div class="col-sm-12 col-md-5">
                       <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
                         {{service.startIndex}} to
@@ -71,15 +71,13 @@
                         entries
                       </div>
                     </div>
-                    <!-- Pagination -->
                     <div class="col-sm-12 col-md-5">
                       <div class="text-md-right float-md-right pagination-rounded">
                         <ngb-pagination [collectionSize]="total$ | async" [(page)]="service.page" [pageSize]="service.pageSize">
                         </ngb-pagination>
                       </div>
                     </div>
-                    <!-- End Pagination -->
-                  </div>
+                  </div> -->
                 </div>
               </div>
         </div>
@@ -87,7 +85,7 @@
 </div>  
 
 
-<!-- ========================================= Edit State ========================================= -->
+<!-- ========================================= Edit City ========================================= -->
 
 <ng-template #editCitycenterDataModal let-modal>
     <div class="modal-header">
@@ -98,7 +96,7 @@
         <div class="col-lg-12 col-md-12">
             <div class="card">
               <div class="card-body">
-                <form (ngSubmit)="submitUpdateCountryForm()" [formGroup]="updateCityForm">
+                <form (ngSubmit)="submitUpdateCityForm()" [formGroup]="updateCityForm">
                   <div class="form-group">
                     <label>City Code</label>
                     <div>
@@ -146,3 +144,4 @@
           </div>
     </div>
   </ng-template>
+  <ngx-bootstrap-spinner></ngx-bootstrap-spinner>
