@@ -1,1 +1,664 @@
-<p>customer-mgmt works!</p>
+<div class="container-fluid">
+    <app-pagetitle title="Master Data Management" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                  <div class="row mb-md-2">
+                      <div class="col-md-12">
+                          <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-title">Customer Data List</h4>
+                              </div>
+                            <!-- End search -->
+                            <div class="col-md-6">
+                                <div class="text-right">
+                                    <button type="button" (click)="openAddCustomerModel(centerDataModal)"
+                                         class="btn btn-success btn btn-sm">
+                                        Add New Customer
+                                        <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                                    </button>
+                                </div>
+                                
+                            </div>
+                          </div>
+                      </div>
+                     
+                  </div>
+                  <!-- Table -->
+                  <div class="table-responsive">
+                    <table id="basic-datatable"
+                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                      <thead>
+                        <tr>
+                          <th class="table-column-text-center">#</th>
+                          <th class="table-column-text-left" sortable="name" (sort)="onSort($event)">Customer Name</th>
+                          <th class="table-column-text-left" sortable="position" (sort)="onSort($event)">Description</th>
+                          <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Company Name</th>
+                          <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Company Address</th>
+                           <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Company Email</th>
+                            <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Company Phone</th>
+                             <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Contact Email</th>
+                              <th class="table-column-text-left" sortable="office" (sort)="onSort($event)">Contact Mobile</th>
+                          <th class="table-column-text-center" style="width: 30%;">Action Taken</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let table of tableData let i=index">
+                        <tr>
+                          <td align="center">
+                            {{i+1}}
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.customerName" ></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.description" ></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.companyName" ></ngb-highlight>
+                          </td>
+                          <td>
+                            <ngb-highlight [result]="table.companyAddress" ></ngb-highlight>
+                          </td>
+                           <td>
+                            <ngb-highlight [result]="table.companyEmailId" ></ngb-highlight>
+                          </td>
+                           <td>
+                            <ngb-highlight [result]="table.companyPhoneNo" ></ngb-highlight>
+                          </td>
+                           <td>
+                            <ngb-highlight [result]="table.primaryContactEmail" ></ngb-highlight>
+                          </td>
+                           <td>
+                            <ngb-highlight [result]="table.primaryContactMobileno" ></ngb-highlight>
+                          </td>
+                          <td>
+                            <a (click)="editCustomerPopupForm(table,editCustomercenterDataModal)" href="javascript:void(0);" class="mr-3 text-primary" ngbTooltip="Edit">
+                                <i class="mdi mdi-pencil font-size-18"></i>Edit</a>
+                            <a href="javascript:void(0);" (click)="deleteCustomer(table)" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                                class="mdi mdi-trash-can font-size-18"></i>Delete</a>
+                            <a href="javascript:void(0);" (click)="createInvoicePopupModel(table, CreatInvoicecenterDataModal)" class="text-success" ngbTooltip="Create"><i
+                                class="mdi mdi-plus-circle-outline font-size-18"></i>Create Invoice</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- End table -->
+                  <!-- <div class="row justify-content-md-between align-items-md-center mt-2">
+                    <div class="col-sm-12 col-md-5">
+                      <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                        {{Service.startIndex}} to
+                        {{Service.endIndex}} of {{Service.totalRecords}}
+                        entries
+                      </div>
+                    </div>
+                    <div class="col-sm-12 col-md-5">
+                      <div class="text-md-right float-md-right pagination-rounded">
+                        <ngb-pagination [collectionSize]="total$ | async" [(page)]="Service.page" [pageSize]="Service.pageSize">
+                        </ngb-pagination>
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+
+<!-- ========================================= Add New Customer ========================================= -->
+
+<ng-template #centerDataModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title mt-0">Add New Customer</h5>
+      <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-lg-12 col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <form (ngSubmit)="addCustomer()" [formGroup]="addCustomerForm">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Customer Name</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="customerName"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.customerName.errors}" placeholder="Enter Customer Name" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.customerName.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.customerName.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                <label>Description</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="description"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.description.errors}" placeholder="Enter Service Name" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.description.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.description.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                <label>Company Name</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="companyName"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.companyName.errors}" placeholder="Enter Company Name" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.companyName.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.companyName.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Company Address</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="companyAddress"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.companyAddress.errors}" placeholder="Enter companyAddress" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.companyAddress.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.companyAddress.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Company Email</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="companyEmailId"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.companyEmailId.errors}" placeholder="Enter companyEmail" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.companyEmailId.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.companyEmailId.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Company Phone No</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="companyPhoneNo"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.companyPhoneNo.errors}" placeholder="Enter companyPhoneNo" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.companyPhoneNo.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.companyPhoneNo.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                              
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Head Office Address</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="headOfficeAddress"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.headOfficeAddress.errors}" placeholder="Enter headOfficeAddress" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.headOfficeAddress.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.headOfficeAddress.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Head Office Email</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="headOfficeEmailId"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.headOfficeEmailId.errors}" placeholder="Enter headOfficeEmailId" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.headOfficeEmailId.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.headOfficeEmailId.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Head Office Phone</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="headOfficePhoneNo"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.headOfficePhoneNo.errors}" placeholder="Enter headOfficePhoneNo" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.headOfficePhoneNo.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.headOfficePhoneNo.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                           
+                              
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label>Primary Contact Email</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="primaryContactEmail"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.primaryContactEmail.errors}" placeholder="Enter primaryContactEmail" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.primaryContactEmail.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.primaryContactEmail.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Primary Contact Phone</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="primaryContactMobileno"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.primaryContactMobileno.errors}" placeholder="Enter primaryContactMobileno" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.primaryContactMobileno.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.primaryContactMobileno.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>      
+                        </div>
+                    </div>
+                  
+                  
+      
+                  <div class="form-group mb-0">
+                    <div>
+                      <button type="submit" class="btn btn-primary mr-1">
+                        Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary">
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+    </div>
+  </ng-template>
+
+<!-- ========================================= Edit Customer ========================================= -->
+
+<ng-template #editCustomercenterDataModal let-modal>
+    
+    <div class="modal-header">
+        <h5 class="modal-title mt-0">Add New Customer</h5>
+        <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-body">
+          <div class="col-lg-12 col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <form (ngSubmit)="submitUpdateCustomerForm()" [formGroup]="updateCustomerForm">
+                      <div class="col-md-12">
+                          <div class="row">
+                              <div class="form-group col-md-4">
+                                  <label>Customer Name</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="customerName"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.customerName.errors}" placeholder="Enter Customer Name" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.customerName.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.customerName.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label>Description</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="description"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.description.errors}" placeholder="Enter Service Name" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.description.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.description.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label>Company Name</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="companyName"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.companyName.errors}" placeholder="Enter Company Name" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.companyName.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.companyName.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                                </div>
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                              <div class="form-group col-md-4">
+                                  <label>Company Address</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="companyAddress"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.companyAddress.errors}" placeholder="Enter companyAddress" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.companyAddress.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.companyAddress.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                  <label>Company Email</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="companyEmailId"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.companyEmailId.errors}" placeholder="Enter companyEmail" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.companyEmailId.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.companyEmailId.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                  <label>Company Phone No</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="companyPhoneNo"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.companyPhoneNo.errors}" placeholder="Enter companyPhoneNo" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.companyPhoneNo.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.companyPhoneNo.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                                
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                              <div class="form-group col-md-4">
+                                  <label>Head Office Address</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="headOfficeAddress"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.headOfficeAddress.errors}" placeholder="Enter headOfficeAddress" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.headOfficeAddress.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.headOfficeAddress.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                  <label>Head Office Email</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="headOfficeEmailId"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.headOfficeEmailId.errors}" placeholder="Enter headOfficeEmailId" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.headOfficeEmailId.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.headOfficeEmailId.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                  <label>Head Office Phone</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="headOfficePhoneNo"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.headOfficePhoneNo.errors}" placeholder="Enter headOfficePhoneNo" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.headOfficePhoneNo.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.headOfficePhoneNo.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                             
+                                
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="row">
+                              <div class="form-group col-md-4">
+                                  <label>Primary Contact Email</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="primaryContactEmail"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.primaryContactEmail.errors}" placeholder="Enter primaryContactEmail" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.primaryContactEmail.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.primaryContactEmail.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group col-md-4">
+                                  <label>Primary Contact Phone</label>
+                                  <div>
+                                    <input type="text" class="form-control" formControlName="primaryContactMobileno"
+                                      [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.primaryContactMobileno.errors}" placeholder="Enter primaryContactMobileno" />
+                                    <div *ngIf="rangesubmit && updateCustomerControls.primaryContactMobileno.errors" class="invalid-feedback">
+                                      <span *ngIf="updateCustomerControls.primaryContactMobileno.errors.required">This value is required.</span>
+                                    </div>
+                                  </div>
+                              </div>      
+                          </div>
+                      </div>
+                    
+                    
+        
+                    <div class="form-group mb-0">
+                      <div>
+                        <button type="submit" class="btn btn-primary mr-1">
+                          Submit
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+      </div>
+
+</ng-template>
+
+<!--  =============================================== Create Invoice ============================================= -->
+
+<ng-template #CreatInvoicecenterDataModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title mt-0">Create Invoice</h5>
+        <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-body">
+          <div class="col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form (ngSubmit)="submitCreateInvoiceForm()" [formGroup]="createInvoiceForm">
+                        <div class="col-md-12">
+                            <div class="row">
+
+                                <div class="form-group col-md-4">
+                                    <label>Customer Name</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="customerName"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.customerName.errors}" placeholder="Enter Customer Name" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.customerName.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.customerName.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label>Description</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="description"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.description.errors}" placeholder="Enter Service Name" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.description.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.description.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label>Company Name</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="companyName"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.companyName.errors}" placeholder="Enter Company Name" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.companyName.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.companyName.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label>Company Address</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="companyAddress"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.companyAddress.errors}" placeholder="Enter companyAddress" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.companyAddress.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.companyAddress.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Company Email</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="companyEmailId"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.companyEmailId.errors}" placeholder="Enter companyEmail" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.companyEmailId.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.companyEmailId.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Company Phone No</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="companyPhoneNo"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.companyPhoneNo.errors}" placeholder="Enter companyPhoneNo" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.companyPhoneNo.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.companyPhoneNo.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                  
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label>Head Office Address</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="headOfficeAddress"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.headOfficeAddress.errors}" placeholder="Enter headOfficeAddress" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.headOfficeAddress.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.headOfficeAddress.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Head Office Email</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="headOfficeEmailId"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.headOfficeEmailId.errors}" placeholder="Enter headOfficeEmailId" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.headOfficeEmailId.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.headOfficeEmailId.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Head Office Phone</label>
+                                    <div>
+                                      <input type="text" class="form-control" formControlName="headOfficePhoneNo"
+                                        [ngClass]="{'is-invalid': rangesubmit && createInvoiceFormControls.headOfficePhoneNo.errors}" placeholder="Enter headOfficePhoneNo" />
+                                      <div *ngIf="rangesubmit && createInvoiceFormControls.headOfficePhoneNo.errors" class="invalid-feedback">
+                                        <span *ngIf="createInvoiceFormControls.headOfficePhoneNo.errors.required">This value is required.</span>
+                                      </div>
+                                    </div>
+                                </div>
+                               
+                                  
+                            </div>
+                        </div>
+                        <label>Services Details</label><hr/>
+                        <div class="col-md-12" formArrayName="iansServices">
+                            
+                            <div  *ngFor="let arrItems of iansServicesArray.controls; let i = index">
+                                <div class="card bg-cardService">
+                                    <div class="card-body">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="text-left col-md-6">
+                                                    <span class="levelSrvc">Service #{{i+1}}</span>
+                                                    <pre>data: createInvoiceForm</pre>
+                                                </div>
+                                                <div class="text-right col-md-6">
+                                                    <a href="javascript:void(0);" (click)="deleteServiceGroup(i)" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                                                        class="mdi mdi-trash-can font-size-18"></i>Delete Service</a>
+                                                </div>
+    
+                                            </div>
+                                        </div>
+                                        
+                                       
+                                    <div class="row" [formGroupName]="i">
+                                       
+                                        <div class="form-group col-md-3">
+                                            <label>Service Name</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="serviceName" placeholder="Enter serviceName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Service Amount</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="serviceAmount" placeholder="Enter Service" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Service Description</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="serviceDescription" placeholder="Enter Service" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>CGST @9%</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="cgstAmount" placeholder="Enter CGST" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>SGST @9%</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="sgstAmount" placeholder="Enter SGST" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>IGST @18%</label>
+                                            <div>
+                                              <input type="text" class="form-control" formControlName="igstAmount" placeholder="Enter IGST" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Service Start Date</label>
+                                            <div class="input-group clockpicker">
+                                                <input ngbDatepicker class="form-control" formControlName="serviceStartDate" autoClose="false" placeholder="dd/MM/yyyy"
+                                                  #serviceStartdate="ngbDatepicker">
+                                                <div class="input-group-append" (click)="serviceStartdate.toggle()">
+                                                  <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Service End Date</label>
+                                            <div class="input-group clockpicker">
+                                                <input ngbDatepicker class="form-control" formControlName="serviceEndDate" autoClose="false" placeholder="dd/MM/yyyy"
+                                                  #serviceEnddate="ngbDatepicker">
+                                                <div class="input-group-append" (click)="serviceEnddate.toggle()">
+                                                  <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group mb-0 text-center">
+                            <div>
+                              <button type="submit" class="btn btn-primary mr-1">
+                                Submit
+                              </button>
+                              <button type="reset" class="btn btn-secondary">
+                                Reset
+                              </button>
+                            </div>
+                          </div>
+                    </form>    
+                </div>
+            </div>
+        </div>
+       </div>
+</ng-template>
+
+
+
+
+
+
+
+<ngx-bootstrap-spinner></ngx-bootstrap-spinner>

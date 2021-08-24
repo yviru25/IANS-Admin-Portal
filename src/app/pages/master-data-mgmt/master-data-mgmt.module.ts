@@ -12,6 +12,7 @@ import { UiModule } from '../../shared/ui/ui.module';
 import { NgbPaginationModule, NgbTypeaheadModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [CountryMgmtComponent, StateMgmtComponent,
@@ -26,7 +27,8 @@ import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
     NgbTypeaheadModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgbDatepickerModule
   ]
 })
 export class MasterDataMgmtModule { }
