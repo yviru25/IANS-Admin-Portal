@@ -2,7 +2,7 @@ import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { SortEvent, AdvancedSortableDirective } from './table-config/advanced-sortable.directive';
 import { AdvancedService } from './table-config/advanced.service';
 import { Observable } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDateAdapter, NgbDateParserFormatter, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, Validators, FormGroup, FormGroupName, FormArray } from '@angular/forms';
 import { NgxSpinnerService } from "ngx-bootstrap-spinner";
 import { ApiService } from 'src/app/shared/services/api.services';
@@ -10,13 +10,18 @@ import Swal from 'sweetalert2';
 import { CustomerModel } from './table-config/customer.model';
 import { DecimalPipe } from '@angular/common';
 import { NgbDate, NgbCalendar, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { debounceTime, scan, startWith, tap } from 'rxjs/operators';
+import { CustomAdapter, CustomDateParserFormatter } from 'src/app/shared/dateAdapter/datePicker.adapter';
+
 
 
 @Component({
   selector: 'app-customer-mgmt',
   templateUrl: './customer-mgmt.component.html',
   styleUrls: ['./customer-mgmt.component.scss'],
-  providers: [AdvancedService, DecimalPipe]
+  providers: [AdvancedService, DecimalPipe,
+    {provide: NgbDateAdapter, useClass: CustomAdapter},
+    {provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter}]
 })
 export class CustomerMgmtComponent implements OnInit {
 
@@ -34,16 +39,22 @@ export class CustomerMgmtComponent implements OnInit {
   typesubmit: boolean;
   rangesubmit: boolean;
 
-  serviceStartdate: { day: number, month: number,  year: number };
-  serviceEnddate: { day: number, month: number,  year: number };
+  totalAmount = 0;
+  totalCGSTAmount = 0;
+  totalSGSTAmount = 0;
+  totalIGSTAmount = 0;
+
+  serviceStartdate: string;
+  serviceEnddate: string;
 
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
   constructor(public service: AdvancedService, private modalService: NgbModal,
               public formBuilder: FormBuilder, private spiner: NgxSpinnerService,
-              private apiService: ApiService) {
-    // this.tables$ = service.tables$;
-    // this.total$ = service.total$;
+              private apiService: ApiService, private ngbCalendar: NgbCalendar, 
+              private dateAdapter: NgbDateAdapter<string>) {
+    
+                // this.iansServicesArray.valueChanges.subscribe(console.log);
    }
 
   ngOnInit(): void {
@@ -63,6 +74,7 @@ export class CustomerMgmtComponent implements OnInit {
       companyPhoneNo: ['', [Validators.required]],
       companyEmailId: ['', [Validators.required]],
       companyAddress: ['', [Validators.required]],
+      gstNo: ['', [Validators.required]],
       isActive: ['Y', [Validators.required]],
     });
 
@@ -71,6 +83,7 @@ export class CustomerMgmtComponent implements OnInit {
     this.typesubmit = false;
     this.rangesubmit = false;
 
+    
   }
 
   getCustomerList() {
@@ -214,7 +227,9 @@ export class CustomerMgmtComponent implements OnInit {
         headOfficeAddress: [tableModel.headOfficeAddress, [Validators.required]],
         createdBy: 'Portal',
         totalAmount: ['', [Validators.required]],
-        totalGSTAmount: ['', [Validators.required]],
+        totalCGSTAmount: ['', [Validators.required]],
+        totalSGSTAmount: ['', [Validators.required]],
+        totalIGSTAmount: ['', [Validators.required]],
         iansServices: this.formBuilder.array([])
 
     });
@@ -236,18 +251,75 @@ export class CustomerMgmtComponent implements OnInit {
                  serviceEndDate: ['', [Validators.required]],
               }))
             
-          }  
+          } 
+          
+          const frService = this.createInvoiceForm.get('iansServices') as FormArray;
+          console.log(frService.value);
+          this.totalAmountCalCulation(frService.value);
       
     });
+
   }
 
   submitCreateInvoiceForm() {
     console.log(this.createInvoiceForm.value);
+    this.spiner.show();
+     this.apiService.sendPostFormRequest('createInvoice', this.createInvoiceForm.value).subscribe((res) => {
+          this.spiner.hide();
+          const invoiceId = res;
+          console.log(invoiceId);
+          Swal.fire(
+            'Created!',
+            'Invoice has been Created.',
+            'success'
+          ).then( okay => {
+            if (okay) {
+              
+              Swal.fire({
+                title: 'Download Invoice',
+                text: 'You want to download Invoice',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'download Invoice',
+                cancelButtonText: 'No'
+              }).then((result) => {
+                if (result.value) {
+                  this.spiner.show();
+                  this.apiService.download('downloadInvoice/' + invoiceId)
+                      .subscribe( blob => {
+                          const a = document.createElement('a')
+                          const objectUrl = URL.createObjectURL(blob)
+                          a.href = objectUrl
+                          a.download = 'Invoice_'+invoiceId+ new Date()+'.pdf';
+                          a.click();
+                          URL.revokeObjectURL(objectUrl);
+                          this.spiner.hide();
+                          Swal.fire(
+                            'Downloaded!',
+                            'Invoice has been successfully downloaded.',
+                            'success'
+                          ).then( okay => {
+                            if (okay) {
+                              window.location.reload();
+                            }
+                        });
+                  });
+                } else {
+                   window.location.reload();
+                }
+              });
+
+            }
+        });
+
+     })
+
   }
 
   
 
   deleteServiceGroup(index) {
+    console.log(index);
     Swal.fire({
       title: 'Are you sure?',
       text: 'Want to delete Service ',
@@ -259,10 +331,55 @@ export class CustomerMgmtComponent implements OnInit {
       if (result.value) {
         const serviceArray = this.createInvoiceForm.get('iansServices') as FormArray
         serviceArray.removeAt(index);
+        console.log(serviceArray.value);
+        this.totalAmountCalCulation(serviceArray.value);
       }
     });
     
   }
+
+  totalAmountCalCulation(arrayElement: any) {
+    // console.log(arrayElement);
+    this.totalAmount = 0;
+    const serviceArray = this.createInvoiceForm.get('iansServices') as FormArray;
+    for (let index = 0; index < serviceArray.value.length; index++) {
+      this.totalAmount += Number(serviceArray.value[index].serviceAmount);
+      this.createInvoiceForm.get('totalAmount').setValue(this.totalAmount);
+    }
+  }
+
+  totalCGSTAmountCalCulation(arrayElement: any) {
+    // console.log(arrayElement);
+    this.totalCGSTAmount = 0;
+    const serviceArray = this.createInvoiceForm.get('iansServices') as FormArray;
+    for (let index = 0; index < serviceArray.value.length; index++) {
+      this.totalCGSTAmount += Number(serviceArray.value[index].cgstAmount);
+      this.createInvoiceForm.get('totalCGSTAmount').setValue(this.totalCGSTAmount);
+    }
+  }
+  totalSGSTAmountCalCulation(arrayElement: any) {
+    // console.log(arrayElement);
+    this.totalSGSTAmount = 0;
+    const serviceArray = this.createInvoiceForm.get('iansServices') as FormArray;
+    for (let index = 0; index < serviceArray.value.length; index++) {
+      this.totalSGSTAmount += Number(serviceArray.value[index].sgstAmount);
+      this.createInvoiceForm.get('totalSGSTAmount').setValue(this.totalSGSTAmount);
+    }
+  }
+  totalIGSTAmountCalCulation(arrayElement: any) {
+    // console.log(arrayElement);
+    this.totalIGSTAmount = 0;
+    const serviceArray = this.createInvoiceForm.get('iansServices') as FormArray;
+    for (let index = 0; index < serviceArray.value.length; index++) {
+      this.totalIGSTAmount += Number(serviceArray.value[index].igstAmount);
+      this.createInvoiceForm.get('totalIGSTAmount').setValue(this.totalIGSTAmount);
+    }
+  }
+  
+
+
+
+
 
 
 

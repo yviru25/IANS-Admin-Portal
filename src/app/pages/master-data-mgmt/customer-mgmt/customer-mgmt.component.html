@@ -247,6 +247,16 @@
                                   </div>
                                 </div>
                             </div>      
+                            <div class="form-group col-md-4">
+                                <label>GST No</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="gstNo"
+                                    [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.gstNo.errors}" placeholder="Enter gstNo" />
+                                  <div *ngIf="rangesubmit && CustomerFormControls.gstNo.errors" class="invalid-feedback">
+                                    <span *ngIf="CustomerFormControls.gstNo.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>      
                         </div>
                     </div>
                   
@@ -408,7 +418,17 @@
                                       <span *ngIf="updateCustomerControls.primaryContactMobileno.errors.required">This value is required.</span>
                                     </div>
                                   </div>
-                              </div>      
+                              </div> 
+                              <div class="form-group col-md-4">
+                                <label>GST No</label>
+                                <div>
+                                  <input type="text" class="form-control" formControlName="gstNo"
+                                    [ngClass]="{'is-invalid': rangesubmit && updateCustomerControls.gstNo.errors}" placeholder="Enter gstNo" />
+                                  <div *ngIf="rangesubmit && updateCustomerControls.gstNo.errors" class="invalid-feedback">
+                                    <span *ngIf="updateCustomerControls.gstNo.errors.required">This value is required.</span>
+                                  </div>
+                                </div>
+                            </div>        
                           </div>
                       </div>
                     
@@ -561,7 +581,6 @@
                                             <div class="row">
                                                 <div class="text-left col-md-6">
                                                     <span class="levelSrvc">Service #{{i+1}}</span>
-                                                    <pre>data: createInvoiceForm</pre>
                                                 </div>
                                                 <div class="text-right col-md-6">
                                                     <a href="javascript:void(0);" (click)="deleteServiceGroup(i)" class="mr-3 text-danger" ngbTooltip="Delete"><i
@@ -580,12 +599,7 @@
                                               <input type="text" class="form-control" formControlName="serviceName" placeholder="Enter serviceName" />
                                             </div>
                                         </div>
-                                        <div class="form-group col-md-3">
-                                            <label>Service Amount</label>
-                                            <div>
-                                              <input type="text" class="form-control" formControlName="serviceAmount" placeholder="Enter Service" />
-                                            </div>
-                                        </div>
+                                        
                                         <div class="form-group col-md-3">
                                             <label>Service Description</label>
                                             <div>
@@ -593,28 +607,38 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
+                                            <label>Service Amount</label>
+                                            <div>
+                                              <input type="number" class="form-control" formControlName="serviceAmount" 
+                                              placeholder="Enter Service" (ngModelChange) = "totalAmountCalCulation(arrItems)" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
                                             <label>CGST @9%</label>
                                             <div>
-                                              <input type="text" class="form-control" formControlName="cgstAmount" placeholder="Enter CGST" />
+                                              <input type="number" class="form-control" formControlName="cgstAmount"
+                                               placeholder="Enter CGST"  (ngModelChange) = "totalCGSTAmountCalCulation(arrItems)"  /> 
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>SGST @9%</label>
                                             <div>
-                                              <input type="text" class="form-control" formControlName="sgstAmount" placeholder="Enter SGST" />
+                                              <input type="number" class="form-control" formControlName="sgstAmount" 
+                                              placeholder="Enter SGST"  (ngModelChange) = "totalSGSTAmountCalCulation(arrItems)"  />
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>IGST @18%</label>
                                             <div>
-                                              <input type="text" class="form-control" formControlName="igstAmount" placeholder="Enter IGST" />
+                                              <input type="number" class="form-control" formControlName="igstAmount" 
+                                              placeholder="Enter IGST"  (ngModelChange) = "totalIGSTAmountCalCulation(arrItems)"  />
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>Service Start Date</label>
                                             <div class="input-group clockpicker">
                                                 <input ngbDatepicker class="form-control" formControlName="serviceStartDate" autoClose="false" placeholder="dd/MM/yyyy"
-                                                  #serviceStartdate="ngbDatepicker">
+                                                  #serviceStartdate="ngbDatepicker" ngbDatepicker>
                                                 <div class="input-group-append" (click)="serviceStartdate.toggle()">
                                                   <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
@@ -624,7 +648,7 @@
                                             <label>Service End Date</label>
                                             <div class="input-group clockpicker">
                                                 <input ngbDatepicker class="form-control" formControlName="serviceEndDate" autoClose="false" placeholder="dd/MM/yyyy"
-                                                  #serviceEnddate="ngbDatepicker">
+                                                  #serviceEnddate="ngbDatepicker" ngbDatepicker>
                                                 <div class="input-group-append" (click)="serviceEnddate.toggle()">
                                                   <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
                                                 </div>
@@ -636,7 +660,20 @@
 
                             </div>
                         </div>
-
+                        <div class="col-md-12">
+                        <div class="row text-right">
+                            <div class="col-md-12">
+                                <h6>Total Amount: <i class="mdi mdi-currency-inr"></i> 
+                                    <strong><span class="preview-total">{{totalAmount}}</span></strong></h6>
+                                <h6>Total CGST: <i class="mdi mdi-currency-inr"></i> 
+                                    <strong><span class="preview-total">{{totalCGSTAmount}}</span></strong></h6>
+                                <h6>Total SGST: <i class="mdi mdi-currency-inr"></i> 
+                                    <strong><span class="preview-total">{{totalSGSTAmount}}</span></strong></h6>
+                                <h6>Total IGST: <i class="mdi mdi-currency-inr"></i> 
+                                    <strong><span class="preview-total">{{totalIGSTAmount}}</span></strong></h6>
+                            </div>
+                        </div>
+                        </div>
 
                         <div class="form-group mb-0 text-center">
                             <div>

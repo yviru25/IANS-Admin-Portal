@@ -48,6 +48,10 @@ export class ApiService  implements OnInit {
                  );
      }
 
+     public download(url: string): Observable<Blob> {
+       return this.http.get(this.serviceOrigin + url, {responseType: 'blob'});
+      }
+
     private getServerErrorMessage(error: HttpErrorResponse) {
         switch (error.status) {
             case 404: {
