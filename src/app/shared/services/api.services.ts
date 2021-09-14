@@ -51,6 +51,9 @@ export class ApiService  implements OnInit {
      public download(url: string): Observable<Blob> {
        return this.http.get(this.serviceOrigin + url, {responseType: 'blob'});
       }
+     public downloadPost(url: string, body: any): Observable<Blob> {
+       return this.http.post(this.serviceOrigin + url, body, {responseType: 'blob'});
+      }
 
     private getServerErrorMessage(error: HttpErrorResponse) {
         switch (error.status) {

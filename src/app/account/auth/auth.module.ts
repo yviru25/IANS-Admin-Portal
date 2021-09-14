@@ -6,7 +6,7 @@ import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { UiModule } from '../../shared/ui/ui.module';
 import { AuthRoutingModule } from './auth-routing';
-
+import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { PasswordresetComponent } from './passwordreset/passwordreset.component';
@@ -18,7 +18,8 @@ import { PasswordresetComponent } from './passwordreset/passwordreset.component'
     ReactiveFormsModule,
     NgbAlertModule,
     UiModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    NgxSpinnerModule
   ]
 })
 export class AuthModule { }

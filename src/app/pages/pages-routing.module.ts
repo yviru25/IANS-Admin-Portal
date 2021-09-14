@@ -2,10 +2,14 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ExpiredCustomerComponent } from './expired-customer/expired-customer.component';
+import { InvoiceManagementComponent } from './invoice-management/invoice-management.component';
 
 const routes: Routes = [
     { path: '', component: DashboardComponent },
     { path: 'master-data', loadChildren: () => import('./master-data-mgmt/master-data-mgmt.module').then(m => m.MasterDataMgmtModule) },
+    { path: 'expired-cutomer', component: ExpiredCustomerComponent },
+    { path: 'invoice-management', component: InvoiceManagementComponent },
     /* { path: 'calendar', component: CalendarComponent },
     { path: 'chat', component: ChatComponent },
     { path: 'kanban-board', component: KanbanComponent },

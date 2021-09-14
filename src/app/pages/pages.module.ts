@@ -8,7 +8,6 @@ import { PagesRoutingModule } from './pages-routing.module';
 
 import { NgbNavModule, NgbDropdownModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { DndModule } from 'ngx-drag-drop';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -17,6 +16,10 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ExpiredCustomerComponent } from './expired-customer/expired-customer.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
+import { InvoiceManagementComponent } from './invoice-management/invoice-management.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -24,21 +27,22 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 };
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [DashboardComponent, ExpiredCustomerComponent, InvoiceManagementComponent],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     PagesRoutingModule,
     UiModule,
-    Ng2SearchPipeModule,
     NgbNavModule,
     NgbDropdownModule,
     NgbTooltipModule,
     NgApexchartsModule,
     PerfectScrollbarModule,
     DndModule,
-    FullCalendarModule
+    FullCalendarModule,
+    NgxDatatableModule,
+    NgxSpinnerModule
   ],
   providers: [
     {

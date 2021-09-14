@@ -48,9 +48,9 @@ export const MENU: MenuItem[] = [
         id: 3,
         label: 'Invoice Management',
         icon: 'ri-price-tag-2-line',
-        link: '/calendar'
+        link: 'invoice-management'
     },
-    {
+    /* {
         id: 5,
         label: 'Report',
         icon: 'ri-store-2-line',
@@ -80,17 +80,17 @@ export const MENU: MenuItem[] = [
                 parentId: 5
             }
         ]
-    },
-    {
+    }, */
+    /* {
         id: 4,
         label: 'Notification',
         icon: 'ri-notification-3-line',
         link: '/chat'
-    },
+    }, */
     {
         id: 15,
         label: 'Expired Customer',
         icon: 'ri-file-list-3-line',
-        link: '/kanban-board'
+        link: 'expired-cutomer'
     }
 ];

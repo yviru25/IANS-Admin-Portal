@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -13,7 +15,7 @@ export class DashboardComponent implements OnInit {
 
   quickService = [];
   breadCrumbItems: Array<{}>;
-  constructor() {
+  constructor(private route: Router) {
   }
 
   ngOnInit(): void {
@@ -24,35 +26,35 @@ export class DashboardComponent implements OnInit {
         serviceName: 'Country Managment',
         serviceType: 'Master Data Managment',
         cardColor: 'card gradient-scooter',
-        routPath: ''
+        routPath: '/master-data/country/management'
       },
       {
         iconClassName: 'fas fa-language',
         serviceName: 'State Managment',
         serviceType: 'Master Data Managment',
         cardColor: 'card gradient-bloody',
-        routPath: ''
+        routPath: '/master-data/state/management'
       },
       {
         iconClassName: 'fas fa-building',
         serviceName: 'City Managment',
         serviceType: 'Master Data Managment',
         cardColor: 'card gradient-quepal',
-        routPath: ''
+        routPath: '/master-data/city/management'
       },
       {
         iconClassName: 'fas fa-cogs',
         serviceName: 'Service Managment',
         serviceType: 'Master Data Managment',
         cardColor: 'card gradient-blooker',
-        routPath: ''
+        routPath: '/master-data/service/management'
       },
       {
         iconClassName: 'fas fa-users',
         serviceName: 'Customer Managment',
         serviceType: 'Master Data Managment',
         cardColor: 'card gradient-purpink',
-        routPath: ''
+        routPath: '/master-data/customer/management'
       },
       {
         iconClassName: 'fas fa-clone',
@@ -83,6 +85,10 @@ export class DashboardComponent implements OnInit {
         routPath: ''
       }
     ];
+  }
+
+  routeLink(routName: string) {
+    this.route.navigate([routName])
   }
 
 }

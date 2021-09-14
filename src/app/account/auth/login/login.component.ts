@@ -8,6 +8,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
+import { NgxSpinnerService } from "ngx-bootstrap-spinner";
+import { ApiService } from 'src/app/shared/services/api.services';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -25,15 +28,18 @@ export class LoginComponent implements OnInit {
   year: number = new Date().getFullYear();
 
   // tslint:disable-next-line: max-line-length
-  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router, public authenticationService: AuthenticationService, public authFackservice: AuthfakeauthenticationService) { }
+  constructor(private formBuilder: FormBuilder, private route: ActivatedRoute, 
+    private router: Router, public authenticationService: AuthenticationService, 
+    public authFackservice: AuthfakeauthenticationService, private service: ApiService,
+    private sprinner: NgxSpinnerService) { }
 
   ngOnInit() {
     document.body.removeAttribute('data-layout');
     document.body.classList.add('auth-body-bg');
 
     this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
+      userPassword: ['', [Validators.required]],
     });
 
     // reset login status
@@ -75,6 +81,53 @@ export class LoginComponent implements OnInit {
             });
       }
     }
+  }
+
+  onLoggedIn() {
+    console.log(this.loginForm.value);
+    this.sprinner.show();
+    this.service.sendPostFormRequest('login', this.loginForm.value).subscribe(
+      res => {
+        this.sprinner.hide();
+        // console.log(res);
+        this.router.navigate(['/']);
+      },
+      error => {
+        this.sprinner.hide();
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Username or Password not valid'
+        })
+      }
+
+
+     /*  console.log(res);
+      this.sprinner.hide();
+      if(res.status == '"Username or Password not valid') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Please check your username and password!'
+        })
+      } else {
+        this.router.navigate(['/']);
+      } */
+      
+  )
+   /*  if(this.loginForm.valid) {
+      this.sprinner.hide();
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please check your username and password!'
+      })
+    } else {
+      this.service.sendPostFormRequest('login', this.loginForm).subscribe((res) => {
+          this.sprinner.hide();
+          this.router.navigate(['/']);
+      })
+    } */
   }
 
 }

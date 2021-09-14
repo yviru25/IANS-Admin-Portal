@@ -47,6 +47,57 @@ export class CustomerMgmtComponent implements OnInit {
   serviceStartdate: string;
   serviceEnddate: string;
 
+  subscriptionList = [
+    {
+      value: '1 Month',
+      displayName: '1 Month'
+  },
+  {
+      value: '2 Month',
+      displayName: '2 Month'
+  },
+  {
+      value: '3 Month',
+      displayName: '3 Month'
+  },
+  {
+      value: '4 Month',
+      displayName: '4 Month'
+  },
+  {
+      value: '5 Month',
+      displayName: '5 Month'
+  },
+  {
+      value: '6 Month',
+      displayName: '6 Month'
+  },
+  {
+      value: '7 Month',
+      displayName: '7 Month'
+  },
+  {
+      value: '8 Month',
+      displayName: '8 Month'
+  },
+  {
+      value: '9 Month',
+      displayName: '9 Month'
+  },
+  {
+      value: '10 Month',
+      displayName: '10 Month'
+  },
+  {
+      value: '11 Month',
+      displayName: '11 Month'
+  },
+  {
+      value: '12 Month',
+      displayName: '12 Month'
+  }
+  ]
+
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
   constructor(public service: AdvancedService, private modalService: NgbModal,
@@ -76,6 +127,11 @@ export class CustomerMgmtComponent implements OnInit {
       companyAddress: ['', [Validators.required]],
       gstNo: ['', [Validators.required]],
       isActive: ['Y', [Validators.required]],
+      subscriptionValue: ['', [Validators.required]],
+      IansSubscription: this.formBuilder.group({
+        subscriptionValue: 1,
+        displayName: '1 Month'
+      })
     });
 
     this.submit = false;
@@ -112,7 +168,11 @@ export class CustomerMgmtComponent implements OnInit {
   }
 
   addCustomer(): void {
-     // console.log(this.addCustomerForm.value);
+    const subsIans = this.addCustomerForm.get('IansSubscription') as FormGroup;
+    subsIans.get('subscriptionValue').setValue(this.addCustomerForm.get('subscriptionValue').value);
+    subsIans.get('displayName').setValue(this.addCustomerForm.get('subscriptionValue').value);
+    console.log(subsIans);
+    console.log(this.addCustomerForm.value);
      this.spiner.show();
      this.apiService.sendPostFormRequest('iansCustomers', this.addCustomerForm.value).subscribe((res) => {
           this.spiner.hide();
@@ -121,7 +181,7 @@ export class CustomerMgmtComponent implements OnInit {
             'Customer has been added.',
             'success'
           ).then( okay => {
-            if (okay) {
+            if (okay) { 
               window.location.reload();
             }
         });
@@ -157,6 +217,8 @@ export class CustomerMgmtComponent implements OnInit {
   }
 
   submitUpdateCustomerForm() {
+   
+    console.log(this.updateCustomerForm.value);
     this.spiner.show();
      this.apiService.sendPostFormRequest('iansCustomers', this.updateCustomerForm.value).subscribe((res) => {
           this.spiner.hide();
@@ -230,6 +292,7 @@ export class CustomerMgmtComponent implements OnInit {
         totalCGSTAmount: ['', [Validators.required]],
         totalSGSTAmount: ['', [Validators.required]],
         totalIGSTAmount: ['', [Validators.required]],
+        subscriptionDate: ['', [Validators.required]],
         iansServices: this.formBuilder.array([])
 
     });
@@ -240,34 +303,47 @@ export class CustomerMgmtComponent implements OnInit {
           const invoiceServiceArray = this.createInvoiceForm.get('iansServices') as FormArray;
           for (let index = 0; index < res._embedded.iansServices.length; index++) {
               invoiceServiceArray.push(this.formBuilder.group({
+                 customerId: tableModel.customerId,
                  serviceId: [res._embedded.iansServices[index].serviceId, [Validators.required]],
                  serviceName: [res._embedded.iansServices[index].serviceName, [Validators.required]],
-                 serviceAmount: [res._embedded.iansServices[index].defaultPrice, [Validators.required]],
                  serviceDescription: [res._embedded.iansServices[index].serviceDescription, [Validators.required]],
-                 cgstAmount: ['', [Validators.required]],
-                 sgstAmount: ['', [Validators.required]],
-                 igstAmount: ['', [Validators.required]],
+                 sacCode: [res._embedded.iansServices[index].sacCode, [Validators.required]],
+                 totalAmount: ['', [Validators.required]],
+                 totalCGSTAmount: ['', [Validators.required]],
+                 totalSGSTAmount: ['', [Validators.required]],
+                 totalIGSTAmount: ['', [Validators.required]],
+                 subscriptionDate: ['', [Validators.required]],
                  serviceStartDate: ['', [Validators.required]],
                  serviceEndDate: ['', [Validators.required]],
+                 createdBy: 'Portal'
               }))
             
           } 
           
           const frService = this.createInvoiceForm.get('iansServices') as FormArray;
           console.log(frService.value);
-          this.totalAmountCalCulation(frService.value);
+         // this.totalAmountCalCulation(frService.value);
       
     });
 
   }
 
   submitCreateInvoiceForm() {
-    console.log(this.createInvoiceForm.value);
-    this.spiner.show();
-     this.apiService.sendPostFormRequest('createInvoice', this.createInvoiceForm.value).subscribe((res) => {
+
+    if(this.createInvoiceForm.value.iansServices.length <= 1) {
+      this.createInvoiceForm.value.iansServices.forEach(element => {
+        
+        element['companyName'] = this.createInvoiceForm.get("companyName").value;
+        element['headOfficeAddress'] =  this.createInvoiceForm.get("headOfficeAddress").value;
+        element['gstNo']  =  "7478";
+        
+
+     this.spiner.show();
+     this.apiService.sendPostFormRequest('createInvoice', element).subscribe((res) => {
           this.spiner.hide();
           const invoiceId = res;
           console.log(invoiceId);
+          element['invoiceNo'] = invoiceId
           Swal.fire(
             'Created!',
             'Invoice has been Created.',
@@ -285,7 +361,7 @@ export class CustomerMgmtComponent implements OnInit {
               }).then((result) => {
                 if (result.value) {
                   this.spiner.show();
-                  this.apiService.download('downloadInvoice/' + invoiceId)
+                  this.apiService.downloadPost('downloadInvoice', element)
                       .subscribe( blob => {
                           const a = document.createElement('a')
                           const objectUrl = URL.createObjectURL(blob)
@@ -313,6 +389,21 @@ export class CustomerMgmtComponent implements OnInit {
         });
 
      })
+
+
+      });
+    } else {
+      Swal.fire({
+        title: 'Alert?',
+        text: 'Service can not be submitted more than one',
+        icon: 'warning',
+        cancelButtonText: 'Ok'
+      })
+    }
+
+   
+
+   
 
   }
 

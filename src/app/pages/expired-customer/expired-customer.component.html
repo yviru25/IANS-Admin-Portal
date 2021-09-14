@@ -1,0 +1,148 @@
+<div class="container-fluid">
+    <app-pagetitle title="Expired Customer List" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!--  <h4 class="card-title">Customer Data List</h4> -->
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-right">
+                            <button type="button" (click)="onRenewCustomers()" class="btn btn-success btn btn-sm">
+                                Renew Customers
+                                <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <ngx-datatable #renewCustomerTable class="material expandable" [rows]="rows" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="10" [selected]="selected"
+                [selectionType]="SelectionType.checkbox">
+
+                <ngx-datatable-row-detail [rowHeight]="100" #myDetailRow (toggle)="onDetailToggle($event)">
+                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                        <div style="padding-left:35px;">
+                            <div class="col-md-12">
+                                <div class="row"> 
+                                    
+                                    <div class="form-group col-md-2">
+                                        <label>Service Description</label>
+                                        <div>
+                                          <p>{{row.serviceDescription}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                      <label>Sac Code</label>
+                                      <div>
+                                        <p>{{row.sacCode}}</p>
+                                      </div>
+                                  </div>
+                                    
+                                    <div class="form-group col-md-2">
+                                        <label>Total Amount</label>
+                                        <div>
+                                            <p>{{row.totalAmount}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>CGST @9%</label>
+                                        <div>
+                                            <p>{{row.cgstAmount}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>SGST @9%</label>
+                                        <div>
+                                            <p>{{row.sgstAmount}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>IGST @18%</label>
+                                        <div>
+                                            <p>{{row.igstAmount}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngx-datatable-row-detail>
+                <ngx-datatable-column [width]="50" [resizeable]="false" [sortable]="false" [draggable]="false"
+                    [canAutoResize]="false">
+                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                        <a href="javascript:void(0)" [class.datatable-icon-right]="!expanded"
+                            [class.datatable-icon-down]="expanded" title="Expand/Collapse Row"
+                            (click)="toggleExpandRow(row)">
+                        </a>
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+                    [resizeable]="false">
+                    <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected"
+                        let-selectFn="selectFn">
+                        <input type="checkbox" [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" />
+                    </ng-template>
+                    <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
+                        let-onCheckboxChangeFn="onCheckboxChangeFn">
+                        <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Customer Name">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.iansCustomer.customerName}}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Invoice No">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.invoiceNo}}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Total Amount">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.totalAmount}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Start Date">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.serviceStartDate}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="End Date">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.serviceEndDate}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Subscription Date">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.subscriptionDate}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Subscription Value">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.subscriptionDate}}
+                    </ng-template>
+                </ngx-datatable-column>
+
+            </ngx-datatable>
+
+        </div>
+    </div>
+    <!-- <div class="selected-column">
+        <h4>
+          Selections <small>({{ selected?.length }})</small>
+        </h4>
+        <ul>
+          <li *ngFor="let sel of selected">
+            {{ sel | json }}
+          </li>
+          <li *ngIf="!selected?.length">No Selections</li>
+        </ul>
+      </div> -->
+</div>
+
+<ngx-bootstrap-spinner></ngx-bootstrap-spinner>

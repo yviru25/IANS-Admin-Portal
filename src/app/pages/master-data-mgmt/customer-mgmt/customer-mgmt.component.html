@@ -256,8 +256,29 @@
                                     <span *ngIf="CustomerFormControls.gstNo.errors.required">This value is required.</span>
                                   </div>
                                 </div>
-                            </div>      
+                            </div>  
+                             
                         </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="row">
+                        <!-- <div [formGroupName]="IansSubscription"> -->
+                          <div class="form-group col-md-4">
+                            <label>Subscriotion</label>
+                            <div>
+                            <!--   <input type="text" class="form-control" formControlName="subscriptionValue"
+                                [ngClass]="{'is-invalid': rangesubmit && CustomerFormControls.subscriptionValue.errors}" placeholder="Enter subscriptionValue" />
+                              <div *ngIf="rangesubmit && CustomerFormControls.subscriptionValue.errors" class="invalid-feedback">
+                                <span *ngIf="CustomerFormControls.subscriptionValue.errors.required">This value is required.</span>
+                              </div> -->
+                              <select class="form-control form-select" aria-label="Default select example" formControlName="subscriptionValue">
+                                <option selected disabled>Select Subscription</option>
+                                <option value="{{subs.value}}" *ngFor="let subs of subscriptionList; let i=index">{{subs.displayName}}</option>
+                              </select>
+                            </div>
+                       <!--  </div>   -->
+                      </div>  
+                      </div>
                     </div>
                   
                   
@@ -607,31 +628,38 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
-                                            <label>Service Amount</label>
+                                          <label>Sac Code</label>
+                                          <div>
+                                            <input type="text" class="form-control" formControlName="sacCode" placeholder="Enter Sac Code" />
+                                          </div>
+                                      </div>
+                                        
+                                        <div class="form-group col-md-3">
+                                            <label>Total Amount</label>
                                             <div>
-                                              <input type="number" class="form-control" formControlName="serviceAmount" 
-                                              placeholder="Enter Service" (ngModelChange) = "totalAmountCalCulation(arrItems)" />
+                                              <input type="number" class="form-control" formControlName="totalAmount" 
+                                              placeholder="Enter Service" />
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>CGST @9%</label>
                                             <div>
-                                              <input type="number" class="form-control" formControlName="cgstAmount"
-                                               placeholder="Enter CGST"  (ngModelChange) = "totalCGSTAmountCalCulation(arrItems)"  /> 
+                                              <input type="number" class="form-control" formControlName="totalCGSTAmount"
+                                               placeholder="Enter CGST"  /> 
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>SGST @9%</label>
                                             <div>
-                                              <input type="number" class="form-control" formControlName="sgstAmount" 
-                                              placeholder="Enter SGST"  (ngModelChange) = "totalSGSTAmountCalCulation(arrItems)"  />
+                                              <input type="number" class="form-control" formControlName="totalSGSTAmount" 
+                                              placeholder="Enter SGST"  />
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
                                             <label>IGST @18%</label>
                                             <div>
-                                              <input type="number" class="form-control" formControlName="igstAmount" 
-                                              placeholder="Enter IGST"  (ngModelChange) = "totalIGSTAmountCalCulation(arrItems)"  />
+                                              <input type="number" class="form-control" formControlName="totalIGSTAmount" 
+                                              placeholder="Enter IGST" />
                                             </div>
                                         </div>
                                         <div class="form-group col-md-3">
@@ -660,20 +688,7 @@
 
                             </div>
                         </div>
-                        <div class="col-md-12">
-                        <div class="row text-right">
-                            <div class="col-md-12">
-                                <h6>Total Amount: <i class="mdi mdi-currency-inr"></i> 
-                                    <strong><span class="preview-total">{{totalAmount}}</span></strong></h6>
-                                <h6>Total CGST: <i class="mdi mdi-currency-inr"></i> 
-                                    <strong><span class="preview-total">{{totalCGSTAmount}}</span></strong></h6>
-                                <h6>Total SGST: <i class="mdi mdi-currency-inr"></i> 
-                                    <strong><span class="preview-total">{{totalSGSTAmount}}</span></strong></h6>
-                                <h6>Total IGST: <i class="mdi mdi-currency-inr"></i> 
-                                    <strong><span class="preview-total">{{totalIGSTAmount}}</span></strong></h6>
-                            </div>
-                        </div>
-                        </div>
+                        
 
                         <div class="form-group mb-0 text-center">
                             <div>
