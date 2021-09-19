@@ -72,7 +72,7 @@ onRenewCustomers() {
           serviceStartDate:el.serviceStartDate,
           serviceEndDate:el.serviceEndDate,
           serviceId:el.iansServiceId,
-          subscriptionValue:'1',
+          subscriptionValue:el.iansCustomer.iansSubscription.subscriptionValue,
           serviceDescription: el.serviceDescription
         });
     })

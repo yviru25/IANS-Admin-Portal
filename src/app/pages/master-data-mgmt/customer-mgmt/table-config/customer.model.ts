@@ -20,6 +20,14 @@ export interface CustomerModel {
     primaryContactMobileno: string;
     updatedAt:              string;
     updatedBy:              string;
+    iansSubscription:       IansSubscription;
+}
+
+export interface IansSubscription {
+    subscriptionId:    number;
+    subscriptionValue: string;
+    displayName:       string;
+    isActive:          string;
 }
 
 

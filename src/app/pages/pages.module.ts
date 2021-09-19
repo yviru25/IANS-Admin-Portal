@@ -6,7 +6,7 @@ import { UiModule } from '../shared/ui/ui.module';
 
 import { PagesRoutingModule } from './pages-routing.module';
 
-import { NgbNavModule, NgbDropdownModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule, NgbDropdownModule, NgbTooltipModule, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { DndModule } from 'ngx-drag-drop';
@@ -42,7 +42,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     DndModule,
     FullCalendarModule,
     NgxDatatableModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgbDatepickerModule
+
   ],
   providers: [
     {

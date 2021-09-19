@@ -47,56 +47,7 @@ export class CustomerMgmtComponent implements OnInit {
   serviceStartdate: string;
   serviceEnddate: string;
 
-  subscriptionList = [
-    {
-      value: '1 Month',
-      displayName: '1 Month'
-  },
-  {
-      value: '2 Month',
-      displayName: '2 Month'
-  },
-  {
-      value: '3 Month',
-      displayName: '3 Month'
-  },
-  {
-      value: '4 Month',
-      displayName: '4 Month'
-  },
-  {
-      value: '5 Month',
-      displayName: '5 Month'
-  },
-  {
-      value: '6 Month',
-      displayName: '6 Month'
-  },
-  {
-      value: '7 Month',
-      displayName: '7 Month'
-  },
-  {
-      value: '8 Month',
-      displayName: '8 Month'
-  },
-  {
-      value: '9 Month',
-      displayName: '9 Month'
-  },
-  {
-      value: '10 Month',
-      displayName: '10 Month'
-  },
-  {
-      value: '11 Month',
-      displayName: '11 Month'
-  },
-  {
-      value: '12 Month',
-      displayName: '12 Month'
-  }
-  ]
+  subscriptionList = []
 
   @ViewChildren(AdvancedSortableDirective) headers: QueryList<AdvancedSortableDirective>;
 
@@ -109,6 +60,7 @@ export class CustomerMgmtComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    this.getSubcriptionList();
     this.breadCrumbItems = [{ label: 'Dashboard' }, { label: 'Quick Service', active: true }];
     this.getCustomerList();
 
@@ -128,9 +80,11 @@ export class CustomerMgmtComponent implements OnInit {
       gstNo: ['', [Validators.required]],
       isActive: ['Y', [Validators.required]],
       subscriptionValue: ['', [Validators.required]],
-      IansSubscription: this.formBuilder.group({
+      iansSubscription: this.formBuilder.group({
+        subscriptionId: 1,
         subscriptionValue: 1,
-        displayName: '1 Month'
+        displayName: '1 Month',
+        isActive: 'Y'
       })
     });
 
@@ -144,10 +98,19 @@ export class CustomerMgmtComponent implements OnInit {
 
   getCustomerList() {
     this.spiner.show();
-    this.apiService.sendGetRequest('iansCustomers').subscribe( (res) => {
+    this.apiService.sendGetRequest('getAllCustomers').subscribe( (res) => {
       this.spiner.hide();
-      this.tableData = res._embedded.iansCustomers;    
+      this.tableData = res;    
          
+    });
+  }
+
+  getSubcriptionList() {
+    this.spiner.show();
+    this.apiService.sendGetRequest('iansSubscriptions').subscribe( (res) => {
+      this.spiner.hide();
+      this.subscriptionList = res._embedded.iansSubscriptions;   
+      console.log(this.subscriptionList);
     });
   }
 
@@ -168,11 +131,12 @@ export class CustomerMgmtComponent implements OnInit {
   }
 
   addCustomer(): void {
-    const subsIans = this.addCustomerForm.get('IansSubscription') as FormGroup;
+    const subsIans = this.addCustomerForm.get('iansSubscription') as FormGroup;
     subsIans.get('subscriptionValue').setValue(this.addCustomerForm.get('subscriptionValue').value);
-    subsIans.get('displayName').setValue(this.addCustomerForm.get('subscriptionValue').value);
-    console.log(subsIans);
-    console.log(this.addCustomerForm.value);
+    subsIans.get('displayName').setValue(this.addCustomerForm.get('subscriptionValue').value + ' Month');
+    subsIans.get('subscriptionId').setValue(Number(this.addCustomerForm.get('subscriptionValue').value));
+    /* console.log(subsIans);
+    console.log(this.addCustomerForm.value); */
      this.spiner.show();
      this.apiService.sendPostFormRequest('iansCustomers', this.addCustomerForm.value).subscribe((res) => {
           this.spiner.hide();
@@ -276,6 +240,8 @@ export class CustomerMgmtComponent implements OnInit {
 
   createInvoicePopupModel(tableModel: CustomerModel, CreatInvoicecenterDataModal: any) {
     this.modalService.open(CreatInvoicecenterDataModal, { size: 'xl', scrollable: true, });
+    const sendSubscriptDate=new Date();
+    sendSubscriptDate.setMonth(sendSubscriptDate.getMonth()+Number(tableModel.iansSubscription.subscriptionValue));
     this.createInvoiceForm = this.formBuilder.group({
         customerId: tableModel.customerId,
         companyName: [tableModel.companyName, [Validators.required]],
@@ -292,7 +258,7 @@ export class CustomerMgmtComponent implements OnInit {
         totalCGSTAmount: ['', [Validators.required]],
         totalSGSTAmount: ['', [Validators.required]],
         totalIGSTAmount: ['', [Validators.required]],
-        subscriptionDate: ['', [Validators.required]],
+        subscriptionDate: [sendSubscriptDate.toISOString().slice(0,10), [Validators.required]],
         iansServices: this.formBuilder.array([])
 
     });
@@ -312,7 +278,7 @@ export class CustomerMgmtComponent implements OnInit {
                  totalCGSTAmount: ['', [Validators.required]],
                  totalSGSTAmount: ['', [Validators.required]],
                  totalIGSTAmount: ['', [Validators.required]],
-                 subscriptionDate: ['', [Validators.required]],
+                 subscriptionDate: [sendSubscriptDate.toISOString().slice(0,10), [Validators.required]],
                  serviceStartDate: ['', [Validators.required]],
                  serviceEndDate: ['', [Validators.required]],
                  createdBy: 'Portal'
@@ -363,13 +329,13 @@ export class CustomerMgmtComponent implements OnInit {
                   this.spiner.show();
                   this.apiService.downloadPost('downloadInvoice', element)
                       .subscribe( blob => {
+                          this.spiner.hide();
                           const a = document.createElement('a')
                           const objectUrl = URL.createObjectURL(blob)
                           a.href = objectUrl
                           a.download = 'Invoice_'+invoiceId+ new Date()+'.pdf';
                           a.click();
                           URL.revokeObjectURL(objectUrl);
-                          this.spiner.hide();
                           Swal.fire(
                             'Downloaded!',
                             'Invoice has been successfully downloaded.',

@@ -61,14 +61,14 @@ export class DashboardComponent implements OnInit {
         serviceName: 'Invoice Managment',
         serviceType: 'Invoice Managment',
         cardColor: 'card gradient-sylvia',
-        routPath: ''
+        routPath: 'invoice-management'
       },
       {
         iconClassName: 'fas fa-chart-bar',
         serviceName: 'Report Managment',
         serviceType: 'Report Managment',
         cardColor: 'card gradient-jshine',
-        routPath: ''
+        routPath: 'expired-cutomer'
       },
       {
         iconClassName: 'fas fa-bell',
