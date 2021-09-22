@@ -1,0 +1,144 @@
+<div class="container-fluid">
+    <app-pagetitle title="Invoice Sequence Management" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="card">
+      
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-sm-12 text-right">
+                   <!--  <button type="button" (click)="dowwnloadInvoice()" class="btn btn-info btn btn-sm">
+                        Download Invoice
+                        <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                    </button> -->
+                    <button type="button" (click)="createInvoiceSeqPopupModel(createInvoiceSequencecenterDataModal)"  class="btn btn-info btn btn-sm" style="margin-left: 5px;">
+                        Add New Sequence
+                        <i class="ri-play-list-add-fill align-middle ml-2"></i>
+                    </button>
+                 </div>
+            </div>
+            <ngx-datatable #seqInvocieTable class="material expandable" [rows]="rows" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="10">
+
+              
+                <ngx-datatable-column name="Sequence Start Value">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.sequenceStartValue}}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Sequence Type">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.sequenceType}}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Year Value">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.yearValue}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Month">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.monthValue}}
+                    </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Created At">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{row.createdAt}}
+                    </ng-template>
+                </ngx-datatable-column>
+               <!--  <ngx-datatable-column name="Action">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <a href="javascript:void(0);" (click)="updateInvoicePopupModel(row, UpdateInvoicecenterDataModal)" class="mr-3 text-primary" ngbTooltip="Edit"><i
+                            class="mdi mdi-pencil font-size-18"></i>Edit</a>
+                        <a href="javascript:void(0);" (click)="deleteInvoice(row)" class="mr-3 text-danger" ngbTooltip="Delete"><i
+                            class="mdi mdi-trash-can font-size-18"></i>Delete</a>
+                    </ng-template>
+                </ngx-datatable-column> -->
+            </ngx-datatable>
+
+        </div>
+    </div>
+    <!-- <div class="selected-column">
+        <h4>
+          Selections <small>({{ selected?.length }})</small>
+        </h4>
+        <ul>
+          <li *ngFor="let sel of selected">
+            {{ sel | json }}
+          </li>
+          <li *ngIf="!selected?.length">No Selections</li>
+        </ul>
+      </div> -->
+</div>
+</div>
+
+
+<!-- ================================ Update Invoice =========================================== -->
+
+<ng-template #createInvoiceSequencecenterDataModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title mt-0">Create new Invoice Sequence</h5>
+        <button type="button" class="close" (click)="modal.dismiss('Cross click')" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-body">
+          <div class="col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form (ngSubmit)="SubmitInvoiceSequenceForm()" [formGroup]="createInvoiceSequenceForm">
+                        
+                        <div class="form-group">
+                            <label>Sequence Start Value</label>
+                            <div>
+                              <input type="text" class="form-control" formControlName="sequenceStartValue"
+                                [ngClass]="{'is-invalid': rangesubmit && createInvoiceSequenceFormControls.sequenceStartValue.errors}" placeholder="Enter sequenceStartValue" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Sequence Type</label>
+                            <div>
+                                <select class="form-control form-select" aria-label="Default select example" formControlName="sequenceType">
+                                    <option value="" disabled>Select Sequence Type</option>
+                                    <option value="I">Individual</option>
+                                    <option value="B">Bulk</option>
+                                  </select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Month Value</label>
+                            <div>
+                            <input type="text" class="form-control" formControlName="monthValue" disabled="true"
+                              [ngClass]="{'is-invalid': rangesubmit && createInvoiceSequenceFormControls.monthValue.errors}" placeholder="Enter monthValue" />
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Year Value</label>
+                            <div>
+                            <input type="text" class="form-control" formControlName="yearValue" disabled="true"
+                              [ngClass]="{'is-invalid': rangesubmit && createInvoiceSequenceFormControls.yearValue.errors}" placeholder="Enter yearValue" />
+                          </div>
+                        </div>
+                          <div class="form-group">
+                            <label>Prefix Value</label>
+                            <div>
+                            <input type="text" class="form-control" formControlName="sequencePrefix"
+                              [ngClass]="{'is-invalid': rangesubmit && createInvoiceSequenceFormControls.sequencePrefix.errors}" placeholder="Enter sequencePrefix" />
+                          </div>
+                        </div>
+                        <div class="form-group mb-0 text-center">
+                            <div>
+                              <button type="submit" class="btn btn-primary mr-1">
+                                Submit
+                              </button>
+                             <!--  <button type="reset" class="btn btn-secondary">
+                                Reset
+                              </button> -->
+                            </div>
+                          </div>
+                    </form>    
+                </div>
+            </div>
+        </div>
+       </div>
+</ng-template>
+<ngx-bootstrap-spinner></ngx-bootstrap-spinner>

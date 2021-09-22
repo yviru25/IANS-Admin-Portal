@@ -41,6 +41,12 @@ export const MENU: MenuItem[] = [
                 label: 'Customer Management',
                 link: '/master-data/customer/management',
                 parentId: 14
+            },
+            {
+                id: 20,
+                label: 'Invoice Sequence Management',
+                link: '/master-data/customer/sequenceinvoice/management',
+                parentId: 14
             }
         ]
     },

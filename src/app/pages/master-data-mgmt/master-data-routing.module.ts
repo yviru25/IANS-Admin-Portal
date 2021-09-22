@@ -5,6 +5,7 @@ import { StateMgmtComponent } from './state-mgmt/state-mgmt.component';
 import { CityMgmtComponent } from './city-mgmt/city-mgmt.component';
 import { CustomerMgmtComponent } from './customer-mgmt/customer-mgmt.component';
 import { ServiceMgmtComponent } from './service-mgmt/service-mgmt.component';
+import { InvoiceSequenceMngtComponent } from './invoice-sequence-mngt/invoice-sequence-mngt.component';
 
 const routes: Routes = [
     {
@@ -26,6 +27,10 @@ const routes: Routes = [
     {
         path: 'customer/management',
         component: CustomerMgmtComponent
+    },
+    {
+        path: 'customer/sequenceinvoice/management',
+        component: InvoiceSequenceMngtComponent
     }
 ];
 

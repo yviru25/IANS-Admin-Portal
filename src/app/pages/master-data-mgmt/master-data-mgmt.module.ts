@@ -13,11 +13,13 @@ import { NgbPaginationModule, NgbTypeaheadModule, NgbDropdownModule } from '@ng-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { InvoiceSequenceMngtComponent } from './invoice-sequence-mngt/invoice-sequence-mngt.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   declarations: [CountryMgmtComponent, StateMgmtComponent,
      CityMgmtComponent, ServiceMgmtComponent,
-     CustomerMgmtComponent, AddCountryComponent, AddStateComponent],
+     CustomerMgmtComponent, AddCountryComponent, AddStateComponent, InvoiceSequenceMngtComponent],
   imports: [
     CommonModule,
     MasterDataRoutingModule,
@@ -28,7 +30,8 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
     FormsModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
-    NgbDatepickerModule
+    NgbDatepickerModule,
+    NgxDatatableModule
   ]
 })
 export class MasterDataMgmtModule { }

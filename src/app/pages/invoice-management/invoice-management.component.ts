@@ -150,11 +150,13 @@ export class InvoiceManagementComponent implements OnInit {
             totalSGSTAmount:el.sgstAmount,
             totalIGSTAmount:el.igstAmount,
             subscriptionDate:el.subscriptionDate,
+            subscriptionStartDate: el.subscriptionDate,
             serviceStartDate:el.serviceStartDate,
             serviceEndDate:el.serviceEndDate,
             serviceId:el.iansServiceId,
             subscriptionValue: el.iansCustomer.iansSubscription.subscriptionValue,
-            serviceDescription: el.serviceDescription
+            serviceDescription: el.serviceDescription,
+            sacCode: el.sacCode
           });
       })
       console.log(jsonData);

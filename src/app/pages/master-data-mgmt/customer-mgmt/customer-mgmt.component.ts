@@ -280,6 +280,7 @@ export class CustomerMgmtComponent implements OnInit {
                  totalSGSTAmount: ['', [Validators.required]],
                  totalIGSTAmount: ['', [Validators.required]],
                  subscriptionDate: [sendSubscriptDate.toISOString().slice(0,10), [Validators.required]],
+                 subscriptionStartDate: sendSubscriptDate.toISOString().slice(0,10),
                  serviceStartDate: ['', [Validators.required]],
                  serviceEndDate: ['', [Validators.required]],
                  createdBy: 'Portal'
