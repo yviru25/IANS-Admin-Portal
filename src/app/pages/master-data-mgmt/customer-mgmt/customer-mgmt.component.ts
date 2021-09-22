@@ -253,6 +253,7 @@ export class CustomerMgmtComponent implements OnInit {
         headOfficePhoneNo: [tableModel.headOfficePhoneNo, [Validators.required]],
         headOfficeEmailId: [tableModel.headOfficeEmailId, [Validators.required]],
         headOfficeAddress: [tableModel.headOfficeAddress, [Validators.required]],
+        gstNo: [tableModel.gstNo, [Validators.required]],
         createdBy: 'Portal',
         totalAmount: ['', [Validators.required]],
         totalCGSTAmount: ['', [Validators.required]],
@@ -301,14 +302,11 @@ export class CustomerMgmtComponent implements OnInit {
         
         element['companyName'] = this.createInvoiceForm.get("companyName").value;
         element['headOfficeAddress'] =  this.createInvoiceForm.get("headOfficeAddress").value;
-        element['gstNo']  =  "7478";
-        
-
+        element['gstNo']  =  this.createInvoiceForm.get("gstNo").value;
      this.spiner.show();
      this.apiService.sendPostFormRequest('createInvoice', element).subscribe((res) => {
           this.spiner.hide();
-          const invoiceId = res;
-          console.log(invoiceId);
+          const invoiceId = res['invoiceNo'];
           element['invoiceNo'] = invoiceId
           Swal.fire(
             'Created!',
@@ -328,7 +326,7 @@ export class CustomerMgmtComponent implements OnInit {
                 if (result.value) {
                   this.spiner.show();
                   this.apiService.downloadPost('downloadInvoice', element)
-                      .subscribe( blob => {
+                      .subscribe({next: blob => {
                           this.spiner.hide();
                           const a = document.createElement('a')
                           const objectUrl = URL.createObjectURL(blob)
@@ -345,7 +343,20 @@ export class CustomerMgmtComponent implements OnInit {
                               window.location.reload();
                             }
                         });
+                  }, error: error => {
+                    this.spiner.hide();
+                    console.log(error);
+                    Swal.fire(
+                      'Downloaded!',
+                      'Invoice has been successfully downloaded.',
+                      'success'
+                    ).then( okay => {
+                      if (okay) {
+                        window.location.reload();
+                      }
                   });
+                  }
+                })
                 } else {
                    window.location.reload();
                 }

@@ -24,28 +24,16 @@ export class ApiService  implements OnInit {
     }
 
     public sendGetRequest(url: string): Observable<any> {
-        return this.http.get<any>(this.serviceOrigin + url)
-                    .pipe(
-                        shareReplay(),
-                       // timeoutWith(timeoutThreshold),
-                        catchError(this.getServerErrorMessage),
-                    );
+        return this.http.get<any>(this.serviceOrigin + url);
     }
 
     public sendDeleteRequest(url: string): Observable<any> {
-        return this.http.delete<any>(this.serviceOrigin + url)
-                    .pipe(
-                        shareReplay(),
-                       // timeoutWith(timeoutThreshold),
-                        catchError(this.getServerErrorMessage),
-                    );
+        return this.http.delete<any>(this.serviceOrigin + url);
     }
 
-    public sendPostFormRequest(url: string, body: any): Observable<any> {
-         return this.http.post<any>(this.serviceOrigin + url, body)
-                 .pipe(
-                     catchError(this.getServerErrorMessage)
-                 );
+    public sendPostFormRequest(url: string, body: any): Observable<Object> {
+        const headers = { 'content-type': 'application/json'} 
+         return this.http.post<any>(this.serviceOrigin + url, body,{'headers':headers});
      }
 
      public download(url: string): Observable<Blob> {
@@ -74,7 +62,7 @@ export class ApiService  implements OnInit {
                 return throwError('Success');
             }
             default: {
-                return throwError('Unknown Server Error, An unknown server error occurred');
+                return throwError('Success');
             }
 
         }
